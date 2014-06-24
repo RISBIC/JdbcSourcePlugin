@@ -5,6 +5,7 @@ package risbic.flow;
 
 import com.arjuna.databroker.data.DataProvider;
 import com.arjuna.databroker.data.DataSource;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import risbic.SimpleProvider;
 import risbic.data.DBEntry;
@@ -27,21 +28,62 @@ import static risbic.factory.JdbcSourceNodeFactory.*;
 public class JdbcSource implements DataSource {
 	private static final Logger logger = Logger.getLogger(JdbcSource.class.getName());
 
-	private String _name;
+	private final String _name;
 
-	private Map<String, String> _properties;
+	private final Map<String, String> _properties;
 
-	private DataProvider<DBEntry> _dataProvider;
+	private final DataProvider<DBEntry> _dataProvider;
 
 	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+	// Which DB server to connect to
+	private final String dbType;
+	private final String dbHost;
+	private final String dbPort;
+	private final String dbName;
+
+	// Credentials to connect to the DB Server
+	private final String dbUser;
+	private final String dbPass;
+
+	// DB URL for JDBC
+	private final String dbURL;
+
+	// Table(s) and column(s) to scan for updates
+	private final String dbTables;
+
+	// How often (and how much) to update
+	private final TimeUnit updateTimeUnit;
+	private final Integer updateFrequency;
+	private final Integer updateBatchSize;
 
 	public JdbcSource(final String name, final Map<String, String> properties) {
 		logger.info("JdbcSource: " + name + ", " + properties);
 
 		_name = name;
 		_properties = properties;
-
 		_dataProvider = new SimpleProvider<>(this);
+
+		// Which DB server to connect to
+		dbType = getProperty(SOURCE_DB_TYPE, "postgresql");
+		dbHost = getProperty(SOURCE_DB_HOST, "localhost");
+		dbPort = getProperty(SOURCE_DB_PORT, "5432");
+		dbName = getProperty(SOURCE_DB_DATABASE, "smn");
+
+		// Credentials to connect to the DB Server
+		dbUser = getProperty(SOURCE_DB_USER, "smn");
+		dbPass = getProperty(SOURCE_DB_PASS, "smn");
+
+		// DB URL for JDBC
+		dbURL = String.format("jdbc:%s://%s:%s/%s?user=%s&password=%s&ssl=true", dbType, dbHost, dbPort, dbName, dbUser, dbPass);
+
+		// Table(s) and column(s) to scan for updates
+		dbTables = getProperty(SOURCE_DB_TABLE, "dbdata.inserttime");
+
+		// How often (and how much) to update
+		updateTimeUnit = TimeUnit.valueOf(getProperty(SOURCE_TIME_UNIT, "SECONDS"));
+		updateFrequency = Integer.valueOf(getProperty(SOURCE_INTERVAL, "30"));
+		updateBatchSize = Integer.valueOf(getProperty(SOURCE_BATCH_SIZE, "100"));
 
 		setupDatabaseScan();
 	}
@@ -81,32 +123,15 @@ public class JdbcSource implements DataSource {
 		_dataProvider.produce(data);
 	}
 
+	private Map<String, String> parseTableMapping() {
+		return Splitter.on(",").withKeyValueSeparator(".").split(dbTables);
+	}
+
 	private void setupDatabaseScan() {
-		// Which DB server to connect to
-		final String databaseType = getProperty(SOURCE_DB_TYPE, "postgresql");
-		final String databaseHost = getProperty(SOURCE_DB_HOST, "localhost");
-		final String databasePort = getProperty(SOURCE_DB_PORT, "5432");
-		final String databaseDB = getProperty(SOURCE_DB_DATABASE, "smn");
-
-		// Credentials to connect to the DB Server
-		final String databaseUser = getProperty(SOURCE_DB_USER, "smn");
-		final String databasePass = getProperty(SOURCE_DB_PASS, "smn");
-
-		// Table and column to scan for updates
-		final String databaseTable = getProperty(SOURCE_DB_TABLE, "dbdata.inserttime");
-
-		// How often (and how much) to update
-		final TimeUnit updateTimeUnit = TimeUnit.valueOf(getProperty(SOURCE_TIME_UNIT, "SECONDS"));
-		final Integer updateFrequency = Integer.valueOf(getProperty(SOURCE_INTERVAL, "30"));
-		final Integer batchSize = Integer.valueOf(getProperty(SOURCE_BATCH_SIZE, "100"));
-
-
 		try {
-			// Connect to the database
-			String connectionURL = String.format("jdbc:%s://%s:%s/%s?user=%s&password=%s&ssl=true", databaseType, databaseHost, databasePort, databaseDB, databaseUser, databasePass);
-			final Connection conn = DriverManager.getConnection(connectionURL);
+			final Connection conn = DriverManager.getConnection(dbURL);
 
-			logger.info(String.format("Connection URL: [%s]", connectionURL));
+			logger.info(String.format("DB URL: [%s]", dbURL));
 
 			// Create the task to be periodically run
 			final Runnable updateScanner = new Runnable() {
@@ -116,7 +141,7 @@ public class JdbcSource implements DataSource {
 			};
 
 			// Set the task to periodically scan
-			scheduler.scheduleAtFixedRate(updateScanner, updateFrequency, updateFrequency, TimeUnit.SECONDS);
+			scheduler.scheduleAtFixedRate(updateScanner, updateFrequency, updateFrequency, updateTimeUnit);
 		} catch (SQLException e) {
 			logger.warning("Could not establish JDBC connection.");
 			e.printStackTrace();
