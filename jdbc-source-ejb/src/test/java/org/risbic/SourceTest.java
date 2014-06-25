@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 2014, Newcastle University, Newcastle-upon-Tyne, England. All rights reserved.
  */
-package risbic;
+package org.risbic;
 
 import org.junit.Test;
-import risbic.data.DBConfig;
-import risbic.data.DBEntry;
+import org.risbic.data.DBConfig;
+import org.risbic.data.DBEntry;
 
 import java.net.URISyntaxException;
 import java.sql.Connection;

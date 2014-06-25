@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014, Newcastle University, Newcastle-upon-Tyne, England. All rights reserved.
  */
-package risbic.factory;
+package org.risbic.factory;
 
 import com.arjuna.databroker.data.DataFlowNodeFactory;
 import com.arjuna.databroker.data.DataFlowNodeFactoryInventory;

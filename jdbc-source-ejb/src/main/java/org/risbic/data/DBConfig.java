@@ -1,4 +1,4 @@
-package risbic.data;
+package org.risbic.data;
 
 import java.util.Map;
 

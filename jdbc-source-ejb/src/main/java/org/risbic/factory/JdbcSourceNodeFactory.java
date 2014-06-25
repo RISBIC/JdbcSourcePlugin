@@ -1,10 +1,10 @@
 /*
  * Copyright (c) 2014, Newcastle University, Newcastle-upon-Tyne, England. All rights reserved.
  */
-package risbic.factory;
+package org.risbic.factory;
 
 import com.arjuna.databroker.data.*;
-import risbic.flow.JdbcSource;
+import org.risbic.flow.JdbcSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;

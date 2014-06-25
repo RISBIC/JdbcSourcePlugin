@@ -9,9 +9,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>risbic</groupId>
+        <groupId>org.risbic</groupId>
         <artifactId>jdbc-source-plugin</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
     </parent>
 
     <artifactId>jdbc-source-ejb</artifactId>

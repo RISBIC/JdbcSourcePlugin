@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014, Newcastle University, Newcastle-upon-Tyne, England. All rights reserved.
  */
-package risbic;
+package org.risbic;
 
 import com.arjuna.databroker.data.DataConsumer;
 import com.arjuna.databroker.data.DataFlowNode;
