@@ -1,5 +1,7 @@
 package risbic.data;
 
+import java.util.Map;
+
 public class DBConfig {
 	private String type;
 	private String host;
@@ -7,6 +9,20 @@ public class DBConfig {
 	private String user;
 	private String pass;
 	private String database;
+	private Map<String,String> tableMappings;
+
+	public DBConfig() {
+	}
+
+	public DBConfig(String type, String host, String port, String user, String pass, String database, Map<String, String> tableMappings) {
+		this.type = type;
+		this.host = host;
+		this.port = port;
+		this.user = user;
+		this.pass = pass;
+		this.database = database;
+		this.tableMappings = tableMappings;
+	}
 
 	public String getType() {
 		return type;
@@ -54,6 +70,18 @@ public class DBConfig {
 
 	public void setDatabase(String database) {
 		this.database = database;
+	}
+
+	public Map<String, String> getTableMappings() {
+		return tableMappings;
+	}
+
+	public void setTableMappings(Map<String, String> tableMappings) {
+		this.tableMappings = tableMappings;
+	}
+
+	public String getURL() {
+		return String.format("jdbc:%s://%s:%s/%s?user=%s&password=%s&ssl=true", type, host, port, database, user, pass);
 	}
 
 	@Override

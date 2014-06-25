@@ -33,7 +33,7 @@ public class JdbcSourceNodeFactory implements DataFlowNodeFactory {
 
 	public static final String SOURCE_DB_DATABASE = "Database Name";
 
-	public static final String SOURCE_DB_TABLE = "Table Name(s)";
+	public static final String SOURCE_DB_TABLES = "Table Name(s)";
 
 	private final String _name;
 
@@ -73,7 +73,7 @@ public class JdbcSourceNodeFactory implements DataFlowNodeFactory {
 		final List<String> propertyNames = new ArrayList<>();
 
 		if (dataFlowNodeClass.isAssignableFrom(JdbcSource.class)) {
-			propertyNames.addAll(Arrays.asList(SOURCE_INTERVAL, SOURCE_TIME_UNIT, SOURCE_BATCH_SIZE, SOURCE_DB_TYPE, SOURCE_DB_HOST, SOURCE_DB_PORT, SOURCE_DB_USER, SOURCE_DB_PASS, SOURCE_DB_DATABASE, SOURCE_DB_TABLE));
+			propertyNames.addAll(Arrays.asList(SOURCE_INTERVAL, SOURCE_TIME_UNIT, SOURCE_BATCH_SIZE, SOURCE_DB_TYPE, SOURCE_DB_HOST, SOURCE_DB_PORT, SOURCE_DB_USER, SOURCE_DB_PASS, SOURCE_DB_DATABASE, SOURCE_DB_TABLES));
 		}
 
 		return propertyNames;

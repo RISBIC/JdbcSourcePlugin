@@ -20,19 +20,17 @@ public class SourceTest {
 		Connection connection = createConnection();
 		populateDB(connection);
 
-		ResultSet results = connection.createStatement().executeQuery("SELECT * FROM test");
-
 		final DBConfig config = new DBConfig();
 		config.setDatabase("test");
 		config.setType("hsqldb");
 		config.setHost("mem");
 
-		while (results.next()) {
-			final DBEntry dbEntry = DBEntry.of(results, "test");
-			dbEntry.setDbConfig(config);
+		ResultSet results = connection.createStatement().executeQuery("SELECT * FROM test");
 
-			System.out.println(dbEntry);
-		}
+		final DBEntry dbEntry = DBEntry.fromResultSet(results, "test");
+		dbEntry.setDbConfig(config);
+
+		System.out.println(dbEntry);
 	}
 
 	private Connection createConnection() throws ClassNotFoundException, SQLException {
@@ -43,18 +41,18 @@ public class SourceTest {
 		return DriverManager.getConnection("jdbc:hsqldb:mem:test");
 	}
 
-	private void populateDB(Connection con) throws SQLException {
+	private void populateDB(Connection connection) throws SQLException {
 		// Create the table
-		con.createStatement().execute("CREATE TABLE test(id INTEGER, name VARCHAR(20), num DECIMAL)");
+		connection.createStatement().execute("CREATE TABLE test(id INTEGER, name VARCHAR(20), num DECIMAL)");
 
-		try (final PreparedStatement ps = con.prepareStatement("INSERT INTO test VALUES(?,?,?)")) {
+		try (final PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO test VALUES(?,?,?)")) {
 			// Put some data in it
 			for (int i = 0; i < 10; i++) {
-				ps.setInt(1, i);
-				ps.setString(2, "Test " + i);
-				ps.setDouble(3, 0.11 * i);
+				preparedStatement.setInt(1, i);
+				preparedStatement.setString(2, "Test " + i);
+				preparedStatement.setDouble(3, 0.11 * i);
 
-				ps.executeUpdate();
+				preparedStatement.executeUpdate();
 			}
 		}
 	}

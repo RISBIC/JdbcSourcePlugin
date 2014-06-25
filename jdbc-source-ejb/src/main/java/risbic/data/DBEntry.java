@@ -80,18 +80,20 @@ public class DBEntry {
 		return sb.toString();
 	}
 
-	public static DBEntry of(final ResultSet row, final String tableName) throws SQLException {
+	public static DBEntry fromResultSet(final ResultSet rows, final String tableName) throws SQLException {
 		final DBEntry result = new DBEntry();
 
 		result.setTable(tableName);
 
-		Map<String, Object> data = new HashMap<>();
+		while (rows.next()) {
+			Map<String, Object> data = new HashMap<>();
 
-		for (int i = 1; i <= row.getMetaData().getColumnCount(); i++) {
-			data.put(row.getMetaData().getColumnName(i), row.getObject(i));
+			for (int i = 1; i <= rows.getMetaData().getColumnCount(); i++) {
+				data.put(rows.getMetaData().getColumnName(i), rows.getObject(i));
+			}
+
+			result.addRow(data);
 		}
-
-		result.addRow(data);
 
 		return result;
 	}
