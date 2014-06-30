@@ -6,7 +6,7 @@
 
 <jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.1">
     <ear-subdeployments-isolated>false</ear-subdeployments-isolated>
-    <sub-deployment name="smn-plugin-1.0.0p1m1.jar">
+    <sub-deployment name="jdbc-source-ejb.jar">
         <dependencies>
             <module name="deployment.server-ear-1.0.0p1m1.ear.data-common-1.0.0p1m1.jar"/>
             <module name="deployment.server-ear-1.0.0p1m1.ear.control-core-1.0.0p1m1.jar"/>

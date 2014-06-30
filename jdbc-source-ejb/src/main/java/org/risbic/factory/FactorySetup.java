@@ -23,9 +23,10 @@ public class FactorySetup {
 
 	@PostConstruct
 	public void setup() {
-		final DataFlowNodeFactory simpleDataFlowNodeFactory = new JdbcSourceNodeFactory(SOURCE_FACTORY_NAME, Collections.<String, String>emptyMap());
+		System.out.println("setup");
+		final DataFlowNodeFactory dataFlowNodeFactory = new JdbcSourceNodeFactory(SOURCE_FACTORY_NAME, Collections.<String, String>emptyMap());
 
-		_dataFlowNodeFactoryInventory.addDataFlowNodeFactory(simpleDataFlowNodeFactory);
+		_dataFlowNodeFactoryInventory.addDataFlowNodeFactory(dataFlowNodeFactory);
 	}
 
 	@PreDestroy

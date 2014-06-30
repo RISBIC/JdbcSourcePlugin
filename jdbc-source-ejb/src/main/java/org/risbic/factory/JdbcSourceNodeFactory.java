@@ -58,7 +58,7 @@ public class JdbcSourceNodeFactory implements DataFlowNodeFactory {
 	public List<Class<? extends DataFlowNode>> getClasses() {
 		final List<Class<? extends DataFlowNode>> classes = new LinkedList<>();
 
-		classes.add(JdbcSource.class);
+		classes.add(DataSource.class);
 
 		return classes;
 	}

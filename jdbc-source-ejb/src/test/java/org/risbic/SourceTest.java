@@ -3,51 +3,49 @@
  */
 package org.risbic;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.risbic.data.DBConfig;
-import org.risbic.data.DBEntry;
+import org.risbic.data.TestDBConfig;
+import org.risbic.data.UpdateConfig;
+import org.risbic.flow.JdbcSource;
 
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 public class SourceTest {
-	@Test
-	public void sourceTest() throws SQLException, URISyntaxException, ClassNotFoundException {
-		Connection connection = createConnection();
-		populateDB(connection);
-
-		final DBConfig config = new DBConfig();
-		config.setDatabase("test");
-		config.setType("hsqldb");
-		config.setHost("mem");
-
-		ResultSet results = connection.createStatement().executeQuery("SELECT * FROM test");
-
-		final DBEntry dbEntry = DBEntry.fromResultSet(results, "test");
-		dbEntry.setDbConfig(config);
-
-		System.out.println(dbEntry);
-	}
-
-	private Connection createConnection() throws ClassNotFoundException, SQLException {
+	@BeforeClass
+	public static void setupDriver() throws ClassNotFoundException {
 		// Load the Driver
 		Class.forName("org.hsqldb.jdbcDriver");
-
-		// Create and return the connection
-		return DriverManager.getConnection("jdbc:hsqldb:mem:test");
 	}
 
-	private void populateDB(Connection connection) throws SQLException {
+	@Test
+	public void sourceTest() throws SQLException, URISyntaxException, ClassNotFoundException {
+		final DBConfig dbConfig = new TestDBConfig();
+		final UpdateConfig updateConfig = new UpdateConfig(5, TimeUnit.SECONDS, 1);
+
+		populateDB(dbConfig);
+
+		final JdbcSource jdbcSource = new JdbcSource("Test JDBC Source", dbConfig, updateConfig);
+
+		// Test the output
+	}
+
+	private void populateDB(DBConfig dbConfig) throws SQLException {
+		// Create a JDBC connection
+		final Connection connection = DriverManager.getConnection(dbConfig.getURL());
+
 		// Create the table
-		connection.createStatement().execute("CREATE TABLE test(id INTEGER, name VARCHAR(20), num DECIMAL)");
+		connection.createStatement().execute("CREATE TABLE test(id INTEGER, name VARCHAR(20), num DOUBLE)");
 
 		try (final PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO test VALUES(?,?,?)")) {
 			// Put some data in it
-			for (int i = 0; i < 10; i++) {
+			for (int i = 1; i <= 50; i++) {
 				preparedStatement.setInt(1, i);
 				preparedStatement.setString(2, "Test " + i);
 				preparedStatement.setDouble(3, 0.11 * i);

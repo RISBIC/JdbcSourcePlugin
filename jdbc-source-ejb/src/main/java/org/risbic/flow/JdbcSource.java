@@ -17,6 +17,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +52,19 @@ public class JdbcSource implements DataSource {
 
 		dbConfig = parseDBConfig();
 		updateConfig = parseUploadConfig();
+
+		scheduleRunnable();
+	}
+
+	public JdbcSource(final String name, final DBConfig dbConfig, final UpdateConfig updateConfig) {
+		logger.info("JdbcSource: " + name + ", " + dbConfig + ", " + updateConfig);
+
+		_name = name;
+		_properties = Collections.emptyMap();
+		_dataProvider = new SimpleProvider<>(this);
+
+		this.dbConfig = dbConfig;
+		this.updateConfig = updateConfig;
 
 		scheduleRunnable();
 	}
@@ -96,7 +110,7 @@ public class JdbcSource implements DataSource {
 			logger.info(String.format("DB URL: [%s]", dbConfig.getURL()));
 
 			// Set the task to periodically scan
-			scheduler.scheduleAtFixedRate(createRunnable(), updateConfig.getFrequency(), updateConfig.getFrequency(), updateConfig.getTimeUnit());
+			scheduler.scheduleAtFixedRate(createRunnable(connection), updateConfig.getFrequency(), updateConfig.getFrequency(), updateConfig.getTimeUnit());
 		} catch (SQLException e) {
 			logger.warning("Could not establish JDBC connection.");
 			e.printStackTrace();
@@ -104,12 +118,20 @@ public class JdbcSource implements DataSource {
 	}
 
 	// Create the Runnable using the dbConfig and uploadConfig objects
-	private Runnable createRunnable() {
+	private Runnable createRunnable(final Connection connection) {
 		return new Runnable() {
+			private final Map<String,Object> discriminatorValues = new HashMap<>();
+
 			public void run() {
-				logger.info(dbConfig.toString());
-				logger.info(updateConfig.toString());
-				logger.info("updateScanner.run()");
+				for (final Map.Entry<String,String> entry : dbConfig.getTableMappings().entrySet()) {
+					if (discriminatorValues.containsKey(entry.getKey())) {
+						System.out.println("SEEN BEFORE!");
+					}
+
+					System.out.println(String.format("SELECT * FROM %s ORDER BY %s DESC", entry.getKey(), entry.getValue()));
+
+					discriminatorValues.put(entry.getKey(), "1");
+				}
 			}
 		};
 	}

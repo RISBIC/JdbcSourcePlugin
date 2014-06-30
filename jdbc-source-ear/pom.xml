@@ -4,7 +4,8 @@
 <!-- Copyright (c) 2014, Newcastle University, Newcastle-upon-Tyne, England. All rights reserved. -->
 <!--                                                                                                     -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -21,12 +22,14 @@
         <dependency>
             <groupId>org.risbic</groupId>
             <artifactId>jdbc-source-ejb</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
             <type>ejb</type>
         </dependency>
     </dependencies>
 
     <build>
+        <finalName>${project.parent.artifactId}</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -37,6 +40,7 @@
                         <ejbModule>
                             <groupId>org.risbic</groupId>
                             <artifactId>jdbc-source-ejb</artifactId>
+                            <bundleFileName>jdbc-source.jar</bundleFileName>
                         </ejbModule>
                     </modules>
                 </configuration>
