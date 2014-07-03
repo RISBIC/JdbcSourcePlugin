@@ -18,7 +18,7 @@ import java.util.Collections;
 public class FactorySetup {
 	public static final String SOURCE_FACTORY_NAME = "JDBC Source Factory";
 
-	@EJB(lookup = "java:global/server-ear-1.0.0p1m1/control-core-1.0.0p1m1/DataFlowNodeFactoryInventory")
+	@EJB(lookup = "java:global/databroker/control-core/DataFlowNodeFactoryInventory")
 	private DataFlowNodeFactoryInventory _dataFlowNodeFactoryInventory;
 
 	@PostConstruct

@@ -9,7 +9,7 @@
 
     <groupId>org.risbic</groupId>
     <artifactId>jdbc-source-plugin</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 
     <packaging>pom</packaging>
 
@@ -18,15 +18,22 @@
     <properties>
         <version.com.arjuna.databroker>1.0.0p1m1</version.com.arjuna.databroker>
 
+        <version.wildfly>8.1.0.Final</version.wildfly>
+        <version.javaee>7</version.javaee>
+        <version.ejb>3.2</version.ejb>
+
+        <wildfly.username>risbic</wildfly.username>
+        <wildfly.password>tsb</wildfly.password>
+        <wildfly.hostname>192.168.59.104</wildfly.hostname>
+        <wildfly.port>49154</wildfly.port>
+        <wildfly.domain>standalone</wildfly.domain>
+
+        <deployments.dir>deployments</deployments.dir>
+
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <jboss-as.username>tsb</jboss-as.username>
-        <jboss-as.password>tsbp</jboss-as.password>
-        <jboss-as.hostname>localhost</jboss-as.hostname>
-        <jboss-as.domain>standalone</jboss-as.domain>
     </properties>
 
     <modules>
@@ -37,9 +44,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.jboss.as</groupId>
-                <artifactId>jboss-as-dist</artifactId>
-                <version>7.1.1.Final</version>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-dist</artifactId>
+                <version>${version.wildfly}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -59,7 +66,7 @@
                 <artifactId>maven-ejb-plugin</artifactId>
                 <version>2.3</version>
                 <configuration>
-                    <ejbVersion>3.1</ejbVersion>
+                    <ejbVersion>${version.ejb}</ejbVersion>
                 </configuration>
             </plugin>
 
@@ -68,14 +75,14 @@
                 <artifactId>maven-ear-plugin</artifactId>
                 <version>2.9</version>
                 <configuration>
-                    <version>6</version>
+                    <version>${version.javaee}</version>
                 </configuration>
             </plugin>
 
             <plugin>
-                <groupId>org.jboss.as.plugins</groupId>
-                <artifactId>jboss-as-maven-plugin</artifactId>
-                <version>7.5.Final</version>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>1.0.2.Final</version>
             </plugin>
         </plugins>
     </build>

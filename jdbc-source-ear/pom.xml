@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.risbic</groupId>
         <artifactId>jdbc-source-plugin</artifactId>
-        <version>0.0.2</version>
+        <version>0.0.3</version>
     </parent>
 
     <artifactId>jdbc-source-ear</artifactId>
@@ -40,7 +40,7 @@
                         <ejbModule>
                             <groupId>org.risbic</groupId>
                             <artifactId>jdbc-source-ejb</artifactId>
-                            <bundleFileName>jdbc-source.jar</bundleFileName>
+                            <bundleFileName>jdbc-source-ejb.jar</bundleFileName>
                         </ejbModule>
                     </modules>
                 </configuration>
