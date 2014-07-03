@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import static org.risbic.factory.JdbcSourceNodeFactory.*;
 
+
 public class JdbcSource implements DataSource {
 	private static final Logger logger = Logger.getLogger(JdbcSource.class.getName());
 
@@ -37,15 +38,13 @@ public class JdbcSource implements DataSource {
 
 	private final DataProvider<DBEntry> _dataProvider;
 
-	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
 	private final DBConfig dbConfig;
 
 	private final UpdateConfig updateConfig;
 
 	public JdbcSource(final String name, final Map<String, String> properties) {
-		logger.info("JdbcSource: " + name + ", " + properties);
-
 		_name = name;
 		_properties = properties;
 		_dataProvider = new SimpleProvider<>(this);
@@ -53,18 +52,7 @@ public class JdbcSource implements DataSource {
 		dbConfig = parseDBConfig();
 		updateConfig = parseUploadConfig();
 
-		scheduleRunnable();
-	}
-
-	public JdbcSource(final String name, final DBConfig dbConfig, final UpdateConfig updateConfig) {
 		logger.info("JdbcSource: " + name + ", " + dbConfig + ", " + updateConfig);
-
-		_name = name;
-		_properties = Collections.emptyMap();
-		_dataProvider = new SimpleProvider<>(this);
-
-		this.dbConfig = dbConfig;
-		this.updateConfig = updateConfig;
 
 		scheduleRunnable();
 	}
@@ -136,29 +124,28 @@ public class JdbcSource implements DataSource {
 		};
 	}
 
-	// Create DBConfig object
+	// Parse DBConfig properties (or default values)
 	private DBConfig parseDBConfig() {
 		// Which DB server to connect to
 		final String type = getProperty(SOURCE_DB_TYPE, "postgresql");
 		final String host = getProperty(SOURCE_DB_HOST, "localhost");
 		final String port = getProperty(SOURCE_DB_PORT, "5432");
-		final String database = getProperty(SOURCE_DB_DATABASE, "smn");
+		final String database = getProperty(SOURCE_DB_DATABASE, "db");
 
 		// Credentials to connect to the DB Server
-		final String user = getProperty(SOURCE_DB_USER, "smn");
-		final String pass = getProperty(SOURCE_DB_PASS, "smn");
+		final String user = getProperty(SOURCE_DB_USER, "username");
+		final String pass = getProperty(SOURCE_DB_PASS, "password");
 
 		// Table(s) and column(s) to scan for updates
-		final String tables = getProperty(SOURCE_DB_TABLES, "dbdata.inserttime");
+		final String tables = getProperty(SOURCE_DB_TABLES, "table.column");
 		final Map<String,String> tableMap = parseTableMapping(tables);
 
 		// Create the DB Config object
 		return new DBConfig(type, host, port, user, pass, database, tableMap);
 	}
 
-	// Create UploadConfig object
+	// Parse UploadConfig properties (or default values)
 	private UpdateConfig parseUploadConfig() {
-		// How often (and how much) to update
 		final Integer updateFrequency = Integer.valueOf(getProperty(SOURCE_INTERVAL, "30"));
 		final TimeUnit updateTimeUnit = TimeUnit.valueOf(getProperty(SOURCE_TIME_UNIT, "SECONDS"));
 		final Integer updateBatchSize = Integer.valueOf(getProperty(SOURCE_BATCH_SIZE, "100"));

@@ -7,9 +7,6 @@ public class UpdateConfig {
 	private TimeUnit timeUnit;
 	private int batchSize;
 
-	public UpdateConfig() {
-	}
-
 	public UpdateConfig(int frequency, TimeUnit timeUnit, int batchSize) {
 		this.frequency = frequency;
 		this.timeUnit = timeUnit;
@@ -74,11 +71,6 @@ public class UpdateConfig {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("UpdateConfig{");
-		sb.append("frequency=").append(frequency);
-		sb.append(", timeUnit=").append(timeUnit);
-		sb.append(", batchSize=").append(batchSize);
-		sb.append('}');
-		return sb.toString();
+		return "UpdateConfig{" + "frequency=" + frequency + ", timeUnit=" + timeUnit + ", batchSize=" + batchSize + '}';
 	}
 }

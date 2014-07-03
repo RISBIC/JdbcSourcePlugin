@@ -72,12 +72,7 @@ public class DBEntry {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("DBEntry{");
-		sb.append("dbConfig=").append(dbConfig);
-		sb.append(", table='").append(table).append('\'');
-		sb.append(", rows=").append(rows);
-		sb.append('}');
-		return sb.toString();
+		return "DBEntry{" + "dbConfig=" + dbConfig + ", table='" + table + '\'' + ", rows=" + rows + '}';
 	}
 
 	public static DBEntry fromResultSet(final ResultSet rows, final String tableName) throws SQLException {

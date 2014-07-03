@@ -4,7 +4,8 @@
 <!-- Copyright (c) 2014, Newcastle University, Newcastle-upon-Tyne, England. All rights reserved. -->
 <!--                                                                                                     -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.risbic</groupId>
@@ -47,6 +48,14 @@
                 <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-dist</artifactId>
                 <version>${version.wildfly}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.spec</groupId>
+                <artifactId>jboss-javaee-7.0</artifactId>
+                <version>1.0.0.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

@@ -4,12 +4,18 @@ import java.util.Map;
 
 public class DBConfig {
 	private String type;
+
 	private String host;
+
 	private String port;
+
 	private String user;
+
 	private String pass;
+
 	private String database;
-	private Map<String,String> tableMappings;
+
+	private Map<String, String> tableMappings;
 
 	public DBConfig() {
 	}
@@ -130,14 +136,6 @@ public class DBConfig {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("DBConfig{");
-		sb.append("type='").append(type).append('\'');
-		sb.append(", host='").append(host).append('\'');
-		sb.append(", port='").append(port).append('\'');
-		sb.append(", user='").append(user).append('\'');
-		sb.append(", pass='").append(pass).append('\'');
-		sb.append(", database='").append(database).append('\'');
-		sb.append('}');
-		return sb.toString();
+		return "DBConfig{" + "type='" + type + '\'' + ", host='" + host + '\'' + ", port='" + port + '\'' + ", user='" + user + '\'' + ", pass='" + pass + '\'' + ", database='" + database + '\'' + '}';
 	}
 }

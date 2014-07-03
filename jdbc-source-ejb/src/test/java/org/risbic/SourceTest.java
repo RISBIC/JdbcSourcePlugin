@@ -6,16 +6,12 @@ package org.risbic;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.risbic.data.DBConfig;
-import org.risbic.data.TestDBConfig;
-import org.risbic.data.UpdateConfig;
-import org.risbic.flow.JdbcSource;
 
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
 
 public class SourceTest {
 	@BeforeClass
@@ -26,12 +22,12 @@ public class SourceTest {
 
 	@Test
 	public void sourceTest() throws SQLException, URISyntaxException, ClassNotFoundException {
-		final DBConfig dbConfig = new TestDBConfig();
-		final UpdateConfig updateConfig = new UpdateConfig(5, TimeUnit.SECONDS, 1);
-
-		populateDB(dbConfig);
-
-		final JdbcSource jdbcSource = new JdbcSource("Test JDBC Source", dbConfig, updateConfig);
+//		final DBConfig dbConfig = new TestDBConfig();
+//		final UpdateConfig updateConfig = new UpdateConfig(5, TimeUnit.SECONDS, 1);
+//
+//		populateDB(dbConfig);
+//
+//		final JdbcSource jdbcSource = new JdbcSource("Test JDBC Source", dbConfig, updateConfig);
 
 		// Test the output
 	}
