@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2014, Newcastle University, Newcastle-upon-Tyne, England. All rights reserved.
  */
+
 package org.risbic.flow;
 
 import com.arjuna.databroker.data.DataProvider;
@@ -14,6 +15,7 @@ import org.risbic.data.UpdateConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,20 +30,13 @@ import java.util.logging.Logger;
 
 import static org.risbic.factory.JdbcSourceNodeFactory.*;
 
-
 public class JdbcSource implements DataSource {
 	private static final Logger logger = Logger.getLogger(JdbcSource.class.getName());
-
 	private final String _name;
-
 	private final Map<String, String> _properties;
-
 	private final DataProvider<DBEntry> _dataProvider;
-
 	private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-
 	private final DBConfig dbConfig;
-
 	private final UpdateConfig updateConfig;
 
 	public JdbcSource(final String name, final Map<String, String> properties) {
@@ -108,17 +103,41 @@ public class JdbcSource implements DataSource {
 	// Create the Runnable using the dbConfig and uploadConfig objects
 	private Runnable createRunnable(final Connection connection) {
 		return new Runnable() {
-			private final Map<String,Object> discriminatorValues = new HashMap<>();
+			private final Map<String, Object> discriminatorValues = new HashMap<>();
 
 			public void run() {
-				for (final Map.Entry<String,String> entry : dbConfig.getTableMappings().entrySet()) {
-					if (discriminatorValues.containsKey(entry.getKey())) {
-						System.out.println("SEEN BEFORE!");
+				for (final Map.Entry<String, String> entry : dbConfig.getTableMappings().entrySet()) {
+					final String tableName = entry.getKey();
+					final String columnName = entry.getValue();
+
+					logger.info(String.format("T: '%s' DC: '%s'", tableName, columnName));
+
+					try {
+						ResultSet resultSet;
+
+						// TODO: refactor duplicate code in ifs
+						if (discriminatorValues.containsKey(tableName)) {
+							// TODO: parameterise using PreparedStatement
+							final String sql = String.format("SELECT * FROM %s WHERE %s > %s ORDER BY %s DESC", tableName, columnName, discriminatorValues.get(tableName), columnName);
+							resultSet = connection.createStatement().executeQuery(sql);
+						} else {
+							// TODO: parameterise using PreparedStatement
+							final String sql = String.format("SELECT * FROM %s ORDER BY %s DESC", tableName, columnName);
+							resultSet = connection.createStatement().executeQuery(sql);
+						}
+
+						final DBEntry dbEntry = DBEntry.fromResultSet(resultSet, tableName);
+
+						if (dbEntry.getRows().size() > 0) {
+							final Map<String, Object> firstRow = dbEntry.getRow(0);
+
+							discriminatorValues.put(tableName, firstRow.get(columnName));
+						}
+
+						emit(dbEntry);
+					} catch (SQLException e) {
+						e.printStackTrace();
 					}
-
-					System.out.println(String.format("SELECT * FROM %s ORDER BY %s DESC", entry.getKey(), entry.getValue()));
-
-					discriminatorValues.put(entry.getKey(), "1");
 				}
 			}
 		};
@@ -138,7 +157,7 @@ public class JdbcSource implements DataSource {
 
 		// Table(s) and column(s) to scan for updates
 		final String tables = getProperty(SOURCE_DB_TABLES, "table.column");
-		final Map<String,String> tableMap = parseTableMapping(tables);
+		final Map<String, String> tableMap = parseTableMapping(tables);
 
 		// Create the DB Config object
 		return new DBConfig(type, host, port, user, pass, database, tableMap);
