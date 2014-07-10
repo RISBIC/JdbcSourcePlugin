@@ -87,7 +87,7 @@ public class DBConfig {
 	}
 
 	public String getURL() {
-		return String.format("jdbc:%s://%s:%s/%s?user=%s&password=%s&ssl=true", type, host, port, database, user, pass);
+		return String.format("jdbc:%s://%s:%s/%s?user=%s&password=%s", type, host, port, database, user, pass);
 	}
 
 	@Override

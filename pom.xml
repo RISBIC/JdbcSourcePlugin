@@ -26,7 +26,7 @@
         <wildfly.username>risbic</wildfly.username>
         <wildfly.password>tsb</wildfly.password>
         <wildfly.hostname>192.168.59.103</wildfly.hostname>
-        <wildfly.port>49156</wildfly.port>
+        <wildfly.port>49154</wildfly.port>
         <wildfly.domain>standalone</wildfly.domain>
 
         <deployments.dir>deployments</deployments.dir>

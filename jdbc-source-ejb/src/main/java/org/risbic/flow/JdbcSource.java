@@ -15,6 +15,7 @@ import org.risbic.data.UpdateConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -115,21 +116,32 @@ public class JdbcSource implements DataSource {
 					try {
 						ResultSet resultSet;
 
-						// TODO: refactor duplicate code in ifs
+						// Have we queried this table before? (i.e. do we have a reference point for checking most recent rows)
 						if (discriminatorValues.containsKey(tableName)) {
-							// TODO: parameterise using PreparedStatement
-							final String sql = String.format("SELECT * FROM %s WHERE %s > %s ORDER BY %s DESC", tableName, columnName, discriminatorValues.get(tableName), columnName);
-							resultSet = connection.createStatement().executeQuery(sql);
+							final String sql = String.format("SELECT * FROM %s WHERE %s > ? ORDER BY %s DESC LIMIT %s", tableName, columnName, columnName, updateConfig.getBatchSize());
+							final PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+							preparedStatement.setObject(1, discriminatorValues.get(tableName));
+
+							logger.info("SQL: [" + sql + "]");
+							logger.info("Getting Discriminator: [Table: " + tableName + ", Column: " + columnName + ", Value: " + discriminatorValues.get(tableName) + "]");
+
+							resultSet = preparedStatement.executeQuery();
 						} else {
-							// TODO: parameterise using PreparedStatement
-							final String sql = String.format("SELECT * FROM %s ORDER BY %s DESC", tableName, columnName);
+							final String sql = String.format("SELECT * FROM %s ORDER BY %s DESC LIMIT %s", tableName, columnName, updateConfig.getBatchSize());
+
+							logger.info("SQL: [" + sql + "]");
+
 							resultSet = connection.createStatement().executeQuery(sql);
 						}
 
 						final DBEntry dbEntry = DBEntry.fromResultSet(resultSet, tableName);
+						dbEntry.setDbConfig(dbConfig);
 
 						if (dbEntry.getRows().size() > 0) {
 							final Map<String, Object> firstRow = dbEntry.getRow(0);
+
+							logger.info("Setting Discriminator: [Table: " + tableName + ", Column: " + columnName + ", Value: " + firstRow.get(columnName) + "]");
 
 							discriminatorValues.put(tableName, firstRow.get(columnName));
 						}
